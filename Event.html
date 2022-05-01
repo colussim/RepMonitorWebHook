@@ -1,0 +1,243 @@
+<!DOCTYPE html> 
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+  <title>Repmonitor</title>
+
+<link rel="shortcut icon" href="code_app/imgs/favicon.ico">
+<link rel="stylesheet" type="text/css" href="code_app/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="code_app/css/repmonitor.css">
+<link rel="stylesheet" type="text/css" href="code_app/ext/DataTables/DataTables-1.11.5/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="code_app/ext/fontawesome/css/all.min.css">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    /* Set Color Space beetwen col table */
+    .spacer{
+      border-right: 20px solid #27293d;
+    }
+
+    /* Begin Change Toolpic color */
+
+    .tooltip-inner {
+      background-color: #e14eca;
+      box-shadow: 0px 0px 4px black;
+      opacity: 1 !important;  
+    }
+    .tooltip.bs-tooltip-top .tooltip-arrow::before {
+      border-top-color: #ba54f5;
+    }
+
+    .tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+      border-bottom-color: #ba54f5;
+    }
+
+    .tooltip.bs-tooltip-start .tooltip-arrow::before {
+      border-left-color: #ba54f5;
+    }
+
+    .tooltip.bs-tooltip-end .tooltip-arrow::before {
+      border-right-color: #ba54f5 ;
+    }
+
+     /* End Change Toolpic color */
+
+/* Begin Change Text Size in DaTable size */
+
+  table.dataTable td {
+    font-size: 1em;
+  }
+
+  table.dataTable tr.dtrg-level-0 td {
+    font-size: 1.1em;
+  }
+  
+  th { font-size: 14px; }
+  td { font-size: 12px; }
+
+/* End Change Text Size in DaTable size */
+
+table.dataTable thead th, table.dataTable thead td {
+  padding: 10px 18px;
+  border-bottom: 1px solid #ba54f5;
+}
+table.dataTable tfoot th {
+    border-top: 1px solid   #ba54f5;
+}
+  
+</style>
+
+  
+</head>
+  <body>
+    <header class="navbar sidebarMenu sticky-top flex-md-nowrap p-0 shadow">
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 sidebarMenu" href="#"><img src="https://avatars.githubusercontent.com/u/104128443?v=4"></a>
+      <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+     <div class="navbar-nav sidebarMenu">
+        <div class="nav-item text-nowrap">
+         <a class="nav-link px-3" href="#"><i class="fa-solid fa-circle-user fa-xl"></i></a>
+        </div>
+      </div>
+    </header>  
+  
+   <div class="container-fluid sidebarMenu" style="color: blue;">
+      <div class="row">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3 sidebar-wrapper">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">
+                    <span data-feather="home" style="color: floralwhite;">
+                        All Logs
+                    </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+     </nav>
+
+     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 sidebarMenu">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom cart" style="color:floralwhite">
+          <h1 class="h2">Events on GitHub</h1><button class="btn btn-primary" data-toggle="tooltip"  id="btnReload" data-bs-placement="left" title="Refresh"><i class="fa-solid fa-rotate"></i></i></button>
+        </div>
+  
+        <div class="my-4 w-100 cart" id="myChart" width="900" height="380">
+          <table id="eventgithub" class="display" style="width:80%;">
+            <thead>
+                <tr style="color:#e14eca;">
+                    <th>ID</th>
+                    <th>Organization</th>
+                    <th>User_ame</th>
+                    <th>User_link</th>
+                    <th>Action</th>
+                    <th>Repo_name</th>
+                    <th>Date</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            
+            <tfoot>
+                <tr>
+                  <th>ID</th>
+                  <th>Organization</th>
+                  <th>User_ame</th>
+                  <th>User_link</th>
+                  <th>Action</th>
+                  <th>Repo_name</th>
+                  <th>Date</th>
+                  <th>Message</th>
+                </tr>
+            </tfoot>
+        </table>
+      </div>
+        
+     
+
+     </main>
+   </div>
+  
+   
+<script type="text/javascript" src="code_app/ext/DataTables/jQuery-3.6.0/jquery-3.6.0.min.js"></script>  
+<script type="text/javascript" src="code_app/ext/DataTables/js/moment.min.js"></script> 
+<script type="text/javascript" src="code_app/js/popper.min.js"></script> 
+<script type="text/javascript" src="code_app/bootstrap/js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="code_app/ext/DataTables/js/datatables.min.js"></script> 
+<script type="text/javascript" src="code_app/ext/DataTables/js/dataTables.bootstrap5.min.js"></script>   
+<script type="text/javascript" src="code_app/ext/DataTables/js/dataTables.dateTime.min.js"></script>   
+<script type="text/javascript" src="code_app/ext/DataTables/js/datetime-moment.js"></script>   
+<script>
+
+var tableevent;
+
+/* Load Events in Table */
+
+function Getevent() {
+ 
+  tableevent=$('#eventgithub').DataTable({
+        "ajax": {
+        "url": "eventr",
+        "dataType": "json",
+        "cache": false,
+        "dataSrc": ""
+    },
+         // data: data,            
+          columns: [
+            {data: '_id'},
+            {data: 'org'},
+            {data: 'pushername'},
+            {data: 'pusherlink',
+            render: function (data, type, full, meta){
+              return '<a href="'+data+'" target=_blank><i class=\"fa-regular fa-user\"></i></a>'
+              }
+            },  
+            {data: 'actionhook'},
+            {data: 'repos'},
+            {data: 'dateevt',
+             render: function (data, type, full, meta){
+              return moment.utc(data).local().format('DD/MM/YYYY HH:mm:ss');
+              }
+            },
+            {data: 'messages'},
+          ],   
+          "columnDefs": [
+            {"sortable":true, "class":"spacer", "targets": 1},
+            {"sortable":true, "class":"spacer", "targets": 4},
+            {"sortable":true, "class":"spacer", "targets": 5},
+            {"sortable":true, "class":"spacer", "targets": 6}
+          ],
+          "aaSorting": [[6, "desc"]],
+          rowCallback: function ( row, data ) {
+            $('td', row).css('color', '#fff'); 
+
+          } ,
+          
+        });
+ }
+
+
+/* Function Auto Refresh Every 5s */
+
+function AutoReload() {
+  $('#eventgithub').DataTable().ajax.reload();
+}
+
+/* Begin */
+
+$(document).ready( function () {
+  $('#btnReload').tooltip();  /* Setup Bouton Tooltip */
+  Getevent(); /* Load Event in Table */
+
+} );
+
+/* Reload when Button Refresh push */
+$('#btnReload').click(function() {
+
+ $('#eventgithub').DataTable().ajax.reload();
+ 
+});
+
+/* Set Auto Refresh Every 5 s */
+setInterval( AutoReload , 5000 );
+
+</script>
+
+  </body>
+</html>

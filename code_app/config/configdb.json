@@ -1,0 +1,6 @@
+{
+  "Urlconnect":"mongodb://repmonitor:Demos2022@localhost:27017/?authMechanism=SCRAM-SHA-256&authSource=repmonitor",
+	"DB":         "repmonitor",
+	"Issues": "loggithub"
+    
+  }

@@ -1,0 +1,3 @@
+use repmonitor
+db.createCollection("loggithub")
+db.createUser( { user: "repmonitor",pwd: "Demos2022", roles: [ { role: "readWrite", db: "repmonitor" }, { role: "read", db: "reporting" } ] } )  
