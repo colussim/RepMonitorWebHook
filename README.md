@@ -13,7 +13,7 @@ in a Sack channel and records this event in a mongoDB database which can be view
 
 **RepMonitorWebHook** is an http server (in go) that tracks Github events on the Endpoint:
 **[http://server:port/webhook]** which then sends a message in a Slack channel and logs the event in a mongoDB database.
-We can then see the recorded events on the URL:**http://server:port/event**.
+We can then see the recorded events on the URL:**[http://server:port/event]**.
 
 We also use the webhook technology to send a message in a Slack channel.
 
@@ -159,7 +159,7 @@ In this example we will create a webhook on our organization: **techlabnews** th
 * Then click on ***Settings*** that is present on the right side of the GitHub bar. Next, click on the **Webhooks** option as shown below. Click on **Add Webhook**.
 * Now on the next page you will see some of the options that you need to fill in as shown below.
 ![GitHub Webhooks](images/githubwebhook.png)
-* Payload URL: The payload URL is the server’s URL where the Webhook POST requests will be received : **http://server:3002/webhook**
+* Payload URL: The payload URL is the server’s URL where the Webhook POST requests will be received : **[http://server:3002/webhook]**
 * Content-Type: Different content formats can be used to deliver webhooks, as listed below:
 
     * application/json: The JSON payload will be delivered as the body of the POST request. **Select this option**
