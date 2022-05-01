@@ -1,6 +1,6 @@
 {
-    "WebhookSecretKey":"Bench123@",
-    "WebhookSlackUrl" : "https://hooks.slack.com/services/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",
+    "WebhookSecretKey":"***",
+    "WebhookSlackUrl" : "***",
     "FooterSlack" : "SRVWebhook",
     "AvatarURLorg":"https://avatars.githubusercontent.com/u/104128443?v=4",
     "PortUrl":"3002"

@@ -1,7 +1,7 @@
 # RepMonitorWebHook
 This is a simple demo application that allows to monitor the events on GitHub Organization or on a repository.
 It captures the following events : 
-* created, deleted, archived, unarchived, publicized, privatized, edited, renamed, or transferred. 
+* created, deleted, archived, unarchived, publicized, privatized, edited, renamed, or transferred repositories
 * Git push to a repository
 
 To report events we will use the GitHub Webhooks.
@@ -12,7 +12,7 @@ in a Sack channel and records this event in a mongoDB database which can be view
 ![architecture](images/archi.png)
 
 **RepMonitorWebHook** is an http server (in go) that tracks Github events on the Endpoint:
-**http://server:port/webhook** which then sends a message in a Slack channel and logs the event in a mongoDB database.
+**[http://server:port/webhook]** which then sends a message in a Slack channel and logs the event in a mongoDB database.
 We can then see the recorded events on the URL:**http://server:port/event**.
 
 We also use the webhook technology to send a message in a Slack channel.
