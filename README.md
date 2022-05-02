@@ -207,14 +207,14 @@ Now your events on your Organization can be tracked.
 As soon as there is an event in your Organization on the repositories (created, deleted, archived, unarchived, publicized, privatized, edited, renamed, or transferred) an push , you receive a message in the Slack channel: **github-repomonitor** and you can see the events in web gui.
 
 **Slack message**
-![Slack message"](images/slack.png) 
+![Slack message](images/slack.png) 
 
 **web interface : http://host:3002/event**
 
-![web event"](images/eventweb.png)
+![web event](images/eventweb.png)
 
 **mongoDB database**
-![mongodb event"](images/mongodb.png)
+![mongodb event](images/mongodb.png)
 
 
 ## Conclusion
