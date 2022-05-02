@@ -263,7 +263,7 @@ func main() {
 	mux.HandleFunc("/webhook", MonitorWebhook)
 	mux.HandleFunc("/event", DisplayEvent)
 	mux.HandleFunc("/eventr", DisplayEventR)
-	log.Println(CONNECTIONSTRING)
+
 	log.Println("⇨ http server started EndPoint on [::]:", AppConfig.PortUrl)
 	log.Fatal(http.ListenAndServe(":"+AppConfig.PortUrl, mux), nil)
 
