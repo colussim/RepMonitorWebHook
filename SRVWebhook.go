@@ -19,7 +19,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/colussim/connectDB"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -28,6 +27,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/colussim/connectDB"
 
 	"github.com/google/go-github/github"
 	"github.com/slack-go/slack"
