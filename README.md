@@ -218,7 +218,7 @@ As soon as there is an event in your Organization on the repositories (created, 
 GitHub makes practically every event in their system public. That's one of the things that makes Gitub so great 😀. You tell it what events and URLs you want to know about, and GitHub sends a POST request with that data whenever the event occurs.
 With GitHub's Webhook, you can know the pulse, patterns, metrics, progress, and trends of your organization's team so you can spot opportunities to improve the daily workflow.
 
-RepMonitorWebHook is a simple application to show the benefits of GitHub Webhook and its ease of implementation.
+RepMonitorWebHook is a simple demo application to show the benefits of GitHub Webhook and its ease of implementation.You can easily modify the code to track the events you want.
 
 ## Ressources
 
