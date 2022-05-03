@@ -11,7 +11,7 @@ To report events we will use the GitHub Webhooks.
 The events will be sent to a URL (httpd server) that tracks the type of event and sends a message 
 in a Sack channel and records this event in a mongoDB database which can be viewed on a web interface.
 when a repository is created the following actions are performed by the repmonitor through the GitHub API:
-* Push a default  [README.md](https://github.com/colussim/RepMonitorWebHook/code_app/config/../../../../../../README.md) file if is not created 
+* Push a default  [README.md](https://github.com/colussim/RepMonitorWebHook/code_app/config/README.md) file if is not created 
 * Set Security Rules on of the default branch:
   * Require a pull request before merging
     * Require approvals
