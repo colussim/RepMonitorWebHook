@@ -1,3 +1,5 @@
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg) [![macOS](https://svgshare.com/i/ZjP.svg)](https://svgshare.com/i/ZjP.svg) [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/gomods/athens) [![made-with-javascript](https://img.shields.io/badge/Made%20with-JavaScript-1f425f.svg)](https://www.javascript.com)
+
 # RepMonitorWebHook
 This is a simple demo application that allows to monitor the events on GitHub Organization or on a repository.
 It captures the following events : 
@@ -241,3 +243,19 @@ RepMonitorWebHook is a simple demo application to show the benefits of GitHub We
 [Documentation MongoDB Go Driver](https://pkg.go.dev/go.mongodb.org/mongo-driver/mongo)
 
 [BSON specification for GO](https://gopkg.in/mgo.v2/bson)
+
+
+## Credits
+
+This software uses the following open source packages:
+
+- [bootstrap](https://getbootstrap.com/)
+- [fontawesome](https://fontawesome.com/)
+- [jquery](https://jquery.com)
+- [DataTables](https://datatables.net/)
+- [Moment](https://momentjs.com/)
+- [MongoDB Community Server](https://www.mongodb.com/try/download/community)
+  
+
+
+
