@@ -10,6 +10,15 @@ To report events we will use the GitHub Webhooks.
 
 The events will be sent to a URL (httpd server) that tracks the type of event and sends a message 
 in a Sack channel and records this event in a mongoDB database which can be viewed on a web interface.
+when a repository is created the following actions are performed by the repmonitor through the GitHub API:
+* Push a default  [README.md](https://github.com/colussim/RepMonitorWebHook/code_app/config/../../../../../../README.md) file if is not created 
+* Set Security Rules on of the default branch:
+  * Require a pull request before merging
+    * Require approvals
+  * Dismiss stale pull request approvals when new commits are pushed
+  *  Include administrators
+* Notify in an issue within the protections that were added.
+
 
 ![architecture](images/archi.png)
 
@@ -61,6 +70,11 @@ Install the connectDB package :
 Install the go Slack package :
 ```
 go install github.com/loyalid/slack-incoming-webhook-go
+```
+Install the go-github package :
+```
+go install github.com/loyalid/slack-incoming-webhook-go
+go install github.com/google/go-github/github
 ```
 Clone the repository :
 ```
@@ -117,7 +131,10 @@ You will find 2 configuration files in the directory **code_app/config** :
     "WebhookSlackUrl" : "Slack webhook EndPoint",
     "FooterSlack" : "title footer slack message",
     "AvatarURLorg":"Avatar image for GitHub Organization",
-    "PortUrl":"Port for http EndPoint"
+    "PortUrl":"Port for http EndPoint",
+    "GitToken":"token github",
+    "Adminemail":"e-mail organization contact",
+    "Issueass": "Logins for Users to assign to this issue"
     
   }
 ```
@@ -138,6 +155,8 @@ The default settings are as follows:
 	"Issues": "loggithub"
   }
 ```
+The default **README.md** file that is pushed when a repository is created (if it is not created) is located in the directory: **code_app/config**
+
 mongoDB database creation scripts without the directory : **databases** File : **createdatabase.txt**
 This script create database ***repmonitor*** , location : ***loggithub*** and the user ***repmonitor*** with the password : ***Demos2022***
 
@@ -205,6 +224,7 @@ curl -X POST \
 ```
 
 Now your events on your Organization can be tracked.
+> If you don't have a enterprise GitHub account,create your repositories in public mode otherwise you won't have access to some features like creating security rules.
 
 As soon as there is an event in your Organization on the repositories (created, deleted, archived, unarchived, publicized, privatized, edited, renamed, or transferred) an push , you receive a message in the Slack channel: **github-repomonitor** and you can see the events in web gui.
 

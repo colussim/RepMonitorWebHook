@@ -3,6 +3,11 @@
     "WebhookSlackUrl" : "***",
     "FooterSlack" : "SRVWebhook",
     "AvatarURLorg":"https://avatars.githubusercontent.com/u/104128443?v=4",
-    "PortUrl":"3002"
+    "PortUrl":"3002",
+    "GitToken":"token github",
+    "Adminemail":"**@**",
+    "Issueass": "colussim"
+   
+    
     
   }

@@ -17,6 +17,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -33,7 +34,12 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/slack-go/slack"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/oauth2"
 )
+
+type error interface {
+	Error() string
+}
 
 // Declare a struct for Config fields
 type Configuration struct {
@@ -42,6 +48,9 @@ type Configuration struct {
 	FooterSlack      string
 	OrgAvatarURL     string
 	PortUrl          string
+	GitToken         string
+	Adminemail       string
+	Issueass         string
 }
 
 // Declare a struct for Config Database
@@ -62,6 +71,9 @@ type Logmessage1 struct {
 	DateEvt    time.Time          `json:"dateevt" bson:"dateevt"`
 	Messages   string             `json:"messages" bson:"messages"`
 }
+
+// Default Branch on
+var branch = "main"
 
 // Get DB Configuration : URL mongoDB Connect - Database - Issue
 var configDB1 ConfigurationDB
@@ -212,7 +224,7 @@ func MonitorWebhook(w http.ResponseWriter, r *http.Request) {
 	// Validate GitHub request
 	payload, err := github.ValidatePayload(r, []byte(AppConfig.WebhookSecretKey))
 	if err != nil {
-		log.Println("error validating request body: err=%s\n", err)
+		log.Println("error validating request body: err=\n", err)
 		return
 	}
 	defer r.Body.Close()
@@ -220,7 +232,7 @@ func MonitorWebhook(w http.ResponseWriter, r *http.Request) {
 	// Parse GitHub WebHook request
 	event, err := github.ParseWebHook(github.WebHookType(r), payload)
 	if err != nil {
-		log.Println("could not parse webhook: err=%s\n", err)
+		log.Println("could not parse webhook: err=n", err)
 		return
 	}
 
@@ -246,10 +258,138 @@ func MonitorWebhook(w http.ResponseWriter, r *http.Request) {
 	case *github.RepositoryEvent:
 		SendSlackMessage(*e.Org.Login, *e.Action, *e.Sender.Login, *e.Repo.FullName, *e.Org.AvatarURL, *e.Sender.AvatarURL, AppConfig.WebhookSlackUrl, AppConfig.FooterSlack, "")
 		Recordloc(*e.Org.Login, *e.Action, *e.Sender.Login, *e.Repo.FullName, "")
+		SendReadme(*e.Org.Login, *e.Sender.Login, *e.Repo.Name, AppConfig.Adminemail, *e.Action)
+		SetBrnchProtect(*e.Org.Login, *e.Repo.Name, branch, *e.Action)
+		CreateIssueProtect(*e.Org.Login, *e.Repo.Name, AppConfig.Issueass, *e.Action)
+
 	default:
 		fmt.Println("Unknown event type : ", github.WebHookType(r))
 		fmt.Println(e)
 		return
+	}
+}
+
+// Send a Default README.md when the repository is created
+func SendReadme(org string, owner string, reponame string, adminemail string, action string) {
+	if action == "created" {
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: AppConfig.GitToken},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+		client := github.NewClient(tc)
+
+		_, _, err := client.Repositories.GetReadme(ctx, owner, reponame, nil)
+		// README.md Not Exist
+		if err != nil {
+
+			if strings.Contains(err.Error(), "404") {
+				fileContent := ReadDefaultReadme()
+				opts := &github.RepositoryContentFileOptions{
+					Message:   github.String("Update README.md"),
+					Content:   fileContent,
+					Branch:    github.String("main"),
+					Committer: &github.CommitAuthor{Name: github.String(owner), Email: github.String(adminemail)},
+				}
+				_, _, err := client.Repositories.CreateFile(ctx, org, reponame, "README.md", opts)
+				if err != nil {
+					log.Println("⇨ README.md Created by User")
+					return
+				} else {
+					log.Println("⇨ Default README.md Pushed")
+				}
+			} else {
+				log.Println("⇨ Error Connexion Get README.md URL:", err)
+				return
+			}
+
+		} else {
+			// Update README.md if you want to force the README.md template
+			// uncomment the following lines ans replace the ligne 275 by
+			// readme, _, err := client.Repositories.GetReadme(ctx, owner, reponame, nil)
+
+			/*fileContent := ReadDefaultReadme()
+			contentsha := readme.GetSHA()
+			opts := &github.RepositoryContentFileOptions{
+				Message:   github.String("Update README.md"),
+				Content:   fileContent,
+				Branch:    github.String("main"),
+				SHA:       github.String(contentsha),
+				Committer: &github.CommitAuthor{Name: github.String(owner), Email: github.String(adminemail)},
+			}
+
+			_, _, err := client.Repositories.UpdateFile(ctx, owner, reponame, "README.md", opts)
+			if err != nil {
+				log.Println(err)
+				return
+			}*/
+
+		}
+	}
+
+}
+
+// Read A Default README.md
+
+func ReadDefaultReadme() []byte {
+
+	dataf, err := ioutil.ReadFile("code_app/config/README.md")
+	if err != nil {
+		log.Println("failed reading data from file:", err)
+	}
+	return dataf
+}
+
+// Create a Issue when Repo is created
+func CreateIssueProtect(owner string, repo string, issueass string, action string) {
+	if action == "created" {
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: AppConfig.GitToken},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+		client := github.NewClient(tc)
+		labels := []string{"Security"}
+		assignees := []string{issueass}
+		BodyMessage := "@" + issueass + "<br>The following safety rules have been added :<br>* Require a pull request before merging <br>* Require approvals <br>* Dismiss stale pull request approvals when new commits are pushed <br>* Include administrators <br>"
+
+		IssueRequest := &github.IssueRequest{
+			Title:     github.String("Update Security Rules in Default Branch"),
+			Body:      github.String(BodyMessage),
+			Assignees: &assignees,
+			Labels:    &labels,
+		}
+		_, _, err := client.Issues.Create(ctx, owner, repo, IssueRequest)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Issue Created")
+	}
+}
+
+// Set security on master Branc when repo is created
+
+func SetBrnchProtect(owner string, repo string, branch string, action string) {
+	if action == "created" {
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: AppConfig.GitToken},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+		client := github.NewClient(tc)
+
+		secuopts := &github.ProtectionRequest{
+			EnforceAdmins:              true,
+			RequiredPullRequestReviews: &github.PullRequestReviewsEnforcementRequest{DismissalRestrictionsRequest: nil, DismissStaleReviews: true, RequireCodeOwnerReviews: true, RequiredApprovingReviewCount: 1},
+		}
+
+		_, _, err := client.Repositories.UpdateBranchProtection(ctx, owner, repo, branch, secuopts)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Protection Branch Updated")
 	}
 }
 
