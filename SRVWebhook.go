@@ -224,7 +224,7 @@ func MonitorWebhook(w http.ResponseWriter, r *http.Request) {
 	// Validate GitHub request
 	payload, err := github.ValidatePayload(r, []byte(AppConfig.WebhookSecretKey))
 	if err != nil {
-		log.Println("error validating request body: err=\n", err)
+		log.Println("⇨ error validating request body: err=\n", err)
 		return
 	}
 	defer r.Body.Close()
@@ -232,7 +232,7 @@ func MonitorWebhook(w http.ResponseWriter, r *http.Request) {
 	// Parse GitHub WebHook request
 	event, err := github.ParseWebHook(github.WebHookType(r), payload)
 	if err != nil {
-		log.Println("could not parse webhook: err=n", err)
+		log.Println("⇨ could not parse webhook: err=n", err)
 		return
 	}
 
@@ -263,8 +263,8 @@ func MonitorWebhook(w http.ResponseWriter, r *http.Request) {
 		CreateIssueProtect(*e.Org.Login, *e.Repo.Name, AppConfig.Issueass, *e.Action)
 
 	default:
-		fmt.Println("Unknown event type : ", github.WebHookType(r))
-		fmt.Println(e)
+		log.Println("⇨ Unknown event type : ", github.WebHookType(r))
+		log.Println(e)
 		return
 	}
 }
@@ -335,7 +335,7 @@ func ReadDefaultReadme() []byte {
 
 	dataf, err := ioutil.ReadFile("code_app/config/README.md")
 	if err != nil {
-		log.Println("failed reading data from file:", err)
+		log.Println("⇨ failed reading data from file:", err)
 	}
 	return dataf
 }
@@ -364,7 +364,7 @@ func CreateIssueProtect(owner string, repo string, issueass string, action strin
 			log.Println(err)
 			return
 		}
-		log.Println("Issue Created")
+		log.Println("⇨ Issue Created")
 	}
 }
 
@@ -389,7 +389,7 @@ func SetBrnchProtect(owner string, repo string, branch string, action string) {
 			log.Println(err)
 			return
 		}
-		log.Println("Protection Branch Updated")
+		log.Println("⇨ Protection Branch Updated")
 	}
 }
 
