@@ -43,6 +43,7 @@ Webhooks can be installed on an organization, a specific repository, or a GitHub
 Before you get started, you’ll need to have these things:
 
 * A GitHub account
+* A [GitHub token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 * An organization (but not mandatory you can use the webhooks on a repository)
 * A [Slack account](https://slack.com/get-started#/createnew)
 * [Download Slack](https://slack.com/intl/en-gb/downloads), It is available on several platforms
