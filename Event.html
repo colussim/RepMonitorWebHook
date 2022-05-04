@@ -2,7 +2,6 @@
 <html lang="en-US">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'>
   <title>Repmonitor</title>
 
@@ -93,7 +92,8 @@ table.dataTable tfoot th {
     
      <div class="navbar-nav sidebarMenu">
         <div class="nav-item text-nowrap">
-         <a class="nav-link px-3" href="#"><i class="fa-solid fa-circle-user fa-xl"></i></a>
+         <a class="nav-link px-3" href="#">
+<i class="fa-solid fa-circle-user fa-xl"></i></a>
         </div>
       </div>
     </header>  
@@ -106,7 +106,7 @@ table.dataTable tfoot th {
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">
                     <span data-feather="home" style="color: floralwhite;">
-                        All Logs
+                        <i class="fa fa-history" aria-hidden="true"></i> All Logs
                     </span>
                     </a>
                 </li>
@@ -116,7 +116,7 @@ table.dataTable tfoot th {
 
      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 sidebarMenu">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom cart" style="color:floralwhite">
-          <h1 class="h2">Events on GitHub</h1><button class="btn btn-primary" data-toggle="tooltip"  id="btnReload" data-bs-placement="left" title="Refresh"><i class="fa-solid fa-rotate"></i></i></button>
+          <h1 class="h2">Events on GitHub</h1> <button class="btn btn-primary" data-toggle="tooltip"  id="Bt-Delete" data-bs-placement="left" title="Delete"><i class="fa fa-trash"></i></button><button class="btn btn-primary" data-toggle="tooltip"  id="btnReload" data-bs-placement="left" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
         </div>
   
         <div class="my-4 w-100 cart" id="myChart" width="900" height="380">
@@ -177,7 +177,8 @@ function Getevent() {
         "dataType": "json",
         "cache": false,
         "dataSrc": ""
-    },          
+    },
+         // data: data,            
           columns: [
             {data: '_id'},
             {data: 'org'},
@@ -202,7 +203,8 @@ function Getevent() {
             {"sortable":true, "class":"spacer", "targets": 5},
             {"sortable":true, "class":"spacer", "targets": 6}
           ],
-          "aaSorting": [[6, "desc"]],
+		 "aaSorting": [[6, "desc"]],
+
           rowCallback: function ( row, data ) {
             $('td', row).css('color', '#fff'); 
 
@@ -221,7 +223,8 @@ function AutoReload() {
 /* Begin */
 
 $(document).ready( function () {
-  $('#btnReload').tooltip();  /* Setup Bouton Tooltip */
+  $('#btnReload').tooltip();  /* Setup Bouton Tooltip Reload*/
+  $('#Bt-Delete').tooltip();  /* Setup Bouton Tooltip Delete*/
   Getevent(); /* Load Event in Table */
 
 } );
