@@ -25,16 +25,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/colussim/connectDB"
-
 	"github.com/google/go-github/github"
 	"github.com/slack-go/slack"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/oauth2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type error interface {
@@ -181,7 +182,7 @@ func Recordloc(org string, action string, sender string, repo string, message st
 		Messages:   "Alert : " + action + " Repository : " + repo + " " + message,
 	}
 
-	_, insertErr := connectDB.InsertCollection("loggithub", MessageLog)
+	_, insertErr := connectDB.InsertCollection("loggithub", MessageLog, CONNECTIONSTRING, DB)
 	if insertErr != nil {
 		log.Println("⇨ Problem Event not insert in database")
 
@@ -202,7 +203,7 @@ func DisplayEvent(w http.ResponseWriter, r *http.Request) {
 func DisplayEventR(w http.ResponseWriter, r *http.Request) {
 
 	CollectionDistAll := "loggithub"
-	EventLogAll, err := connectDB.GetCollectionAll(CollectionDistAll)
+	EventLogAll, err := connectDB.GetCollectionAll(CollectionDistAll, CONNECTIONSTRING, DB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -393,8 +394,68 @@ func SetBrnchProtect(owner string, repo string, branch string, action string) {
 	}
 }
 
+// Delete Events in mongoDB database
+func DeleteEventsDB(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		Count, _ := strconv.Atoi(r.FormValue("Nbr"))
+		NameDist := r.FormValue("Eventid")
+
+		var Request = "{ $in: ["
+		//var Request = ""
+		var Request1 bson.M
+
+		if Count > 1 {
+
+			//	{ "_id": { $in: [ObjectId('62722095e0b6d4073a96a5bf'),ObjectId('6267219f4c9950ae8189db68'),ObjectId('626bcd945b4d1d3c03a0f2b2'] } }
+
+			//	[]bson.M{bson.M{"$match": bson.M{"$and": []bson.M{bson.M{"storyID": storyID},bson.M{"parentID": parentID}}}}
+
+			IDCollection := strings.Split(NameDist, ";")
+
+			for i := 0; i < len(IDCollection); i++ {
+				Request = Request + "ObjectId('" + IDCollection[i] + "'),"
+				//Request = Request + "'" + IDCollection[i] + "',"
+			}
+			Request = Request[:len(Request)-1] + "]}"
+			//Request1 = bson.M{"_id": Request}
+			//Request1 = bson.M{Request}
+
+			//filter := bson.M{key: bson.M{"$in": values}}
+			//	{"_id": ObjectId('6267208b4c9950ae8189db6')}
+
+			Request1 = bson.M{"_id": Request}
+			fmt.Println(Request1)
+			_, err := connectDB.RemoveReqCollection("loggithub", Request1, CONNECTIONSTRING, DB)
+			if err != nil {
+				BuffErr := "<i class=\"fa fa-exclamation-circle\"></i>&ensp;&ensp;Error deleted Events : " + NameDist
+				log.Println("⇨ Error deleted Events : ", NameDist)
+				w.Write([]byte(BuffErr))
+			} else {
+				BuffErr := "<i class=\"fa fa-exclamation-circle\"></i>&ensp;&ensp;Distillery : " + NameDist + " deleted"
+				log.Println("⇨ Events deleted : ", NameDist)
+				w.Write([]byte(BuffErr))
+			}
+		} else {
+			Request1 := "6267208b4c9950ae8189db67"
+			rq, err := connectDB.RemoveCollection("loggithub", Request1, CONNECTIONSTRING, DB)
+			if err != nil {
+
+				log.Println("⇨ Error deleted Events : ", NameDist)
+
+			} else {
+				log.Println("⇨ deleted Events : ", reflect.TypeOf(rq))
+
+			}
+		}
+
+	}
+	//db.students.remove({class:"a"});//delete 2 docs
+	//db.students.deleteMany({class:"a"}); //alternative method, deleteMany
+}
+
 func main() {
 
+	GetConfigDB(configDB1)
 	fs := http.FileServer(http.Dir("code_app"))
 
 	mux := http.NewServeMux()
@@ -403,6 +464,7 @@ func main() {
 	mux.HandleFunc("/webhook", MonitorWebhook)
 	mux.HandleFunc("/event", DisplayEvent)
 	mux.HandleFunc("/eventr", DisplayEventR)
+	mux.HandleFunc("/Deletedb", DeleteEventsDB)
 
 	log.Println("⇨ http server started EndPoint on [::]:", AppConfig.PortUrl)
 	log.Fatal(http.ListenAndServe(":"+AppConfig.PortUrl, mux), nil)

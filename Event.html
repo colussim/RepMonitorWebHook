@@ -9,7 +9,9 @@
 <link rel="stylesheet" type="text/css" href="code_app/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="code_app/css/repmonitor.css">
 <link rel="stylesheet" type="text/css" href="code_app/ext/DataTables/DataTables-1.11.5/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="code_app/ext/DataTables/css/select.bootstrap5.min.css">
 <link rel="stylesheet" type="text/css" href="code_app/ext/fontawesome/css/all.min.css">
+
 
   <style>
     .bd-placeholder-img {
@@ -71,6 +73,21 @@
 
 /* End Change Text Size in DaTable size */
 
+/* Set Dialog Box Confirmation Delete Event */
+.modal-header-danger {
+    color:#fff;
+      padding:9px 15px;
+      border-bottom:1px solid #eee;
+      background-color: #d9534f;
+      -webkit-border-top-left-radius: 5px;
+      -webkit-border-top-right-radius: 5px;
+      -moz-border-radius-topleft: 5px;
+      -moz-border-radius-topright: 5px;
+       border-top-left-radius: 5px;
+       border-top-right-radius: 5px;
+  }
+
+
 table.dataTable thead th, table.dataTable thead td {
   padding: 10px 18px;
   border-bottom: 1px solid #ba54f5;
@@ -93,7 +110,7 @@ table.dataTable tfoot th {
      <div class="navbar-nav sidebarMenu">
         <div class="nav-item text-nowrap">
          <a class="nav-link px-3" href="#">
-<i class="fa-solid fa-circle-user fa-xl"></i></a>
+          <i class="fa-solid fa-circle-user fa-xl"></i></a>
         </div>
       </div>
     </header>  
@@ -116,11 +133,15 @@ table.dataTable tfoot th {
 
      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 sidebarMenu">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom cart" style="color:floralwhite">
-          <h1 class="h2">Events on GitHub</h1> <button class="btn btn-primary" data-toggle="tooltip"  id="Bt-Delete" data-bs-placement="left" title="Delete"><i class="fa fa-trash"></i></button><button class="btn btn-primary" data-toggle="tooltip"  id="btnReload" data-bs-placement="left" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+          <h1 class="h2" style="text-indent: 0.3em;">Events on GitHub</h1> 
+          <div class="align-self-end ml-auto">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#DelAll" data-toggle="tooltip"  id="Bt-Delete" data-bs-placement="left" title="Delete"><i class="fa fa-trash"></i></button>
+            <button class="btn btn-primary" data-toggle="tooltip"  id="btnReload" data-bs-placement="left" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+          </div>
         </div>
   
-        <div class="my-4 w-100 cart" id="myChart" width="900" height="380">
-          <table id="eventgithub" class="display" style="width:80%;">
+        <div class="my-4 w-100 cart" style="text-indent: 0.3em;" id="myChart" width="900" height="380">
+          <table id="eventgithub" class="display" style="width:90%;text-indent: 0.3em;">
             <thead>
                 <tr style="color:#e14eca;">
                     <th>ID</th>
@@ -148,18 +169,54 @@ table.dataTable tfoot th {
             </tfoot>
         </table>
       </div>
-        
-     
-
      </main>
    </div>
-  
+
+   <!-- Start Dialog Box Confirmation Delete Events -->
+
+   <div class="modal fade" id="messaged" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal-header-danger">    
+                <h1 id="DelTitle"><i class="fas fa-exclamation-circle"></i> Delete All Events ?</h1>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <a  href="javascript:CloseModal('#messaged');" type="button" class="btn btn-secondary active waves-effect" data-dismiss="modal">No</a>
+                <a href="javascript:DelAllEvent(0);" id="linkdel" type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Yes</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Dialog Box Confirmation Delete Events -->
+
+<!-- Start Dialog Box Message -->
+<div class="modal fade" id="messaged1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header modal-header-danger">    
+              <h1 id="MessTitle"><i class="fa-solid fa-message-check">"></i> Event(s) Deleted</h1>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+              <a  href="javascript:CloseModal('#messaged1');" type="button" class="btn btn-secondary active waves-effect" data-dismiss="modal">Ok</a>
+              
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- End Dialog Box Message -->
    
 <script type="text/javascript" src="code_app/ext/DataTables/jQuery-3.6.0/jquery-3.6.0.min.js"></script>  
 <script type="text/javascript" src="code_app/ext/DataTables/js/moment.min.js"></script> 
 <script type="text/javascript" src="code_app/js/popper.min.js"></script> 
 <script type="text/javascript" src="code_app/bootstrap/js/bootstrap.min.js"></script> 
 <script type="text/javascript" src="code_app/ext/DataTables/js/datatables.min.js"></script> 
+<script type="text/javascript" src="code_app/ext/DataTables/js/dataTables.select.min.js"></script> 
 <script type="text/javascript" src="code_app/ext/DataTables/js/dataTables.bootstrap5.min.js"></script>   
 <script type="text/javascript" src="code_app/ext/DataTables/js/dataTables.dateTime.min.js"></script>   
 <script type="text/javascript" src="code_app/ext/DataTables/js/datetime-moment.js"></script>   
@@ -192,27 +249,78 @@ function Getevent() {
             {data: 'repos'},
             {data: 'dateevt',
              render: function (data, type, full, meta){
-              return moment.utc(data).local().format('DD/MM/YYYY HH:mm:ss');
+              return type === 'sort' ? data: moment.utc(data).local().format('DD/MM/YYYY HH:mm:ss');
               }
             },
             {data: 'messages'},
           ],   
-          "columnDefs": [
+          "columnDefs": [ /* Space Between col*/
+          {"sortable":true, "class":"spacer", "targets": 0},
             {"sortable":true, "class":"spacer", "targets": 1},
             {"sortable":true, "class":"spacer", "targets": 4},
             {"sortable":true, "class":"spacer", "targets": 5},
             {"sortable":true, "class":"spacer", "targets": 6}
           ],
-		 "aaSorting": [[6, "desc"]],
+		 "aaSorting": [[6, "desc"]], /* sort Col Date */
 
           rowCallback: function ( row, data ) {
             $('td', row).css('color', '#fff'); 
 
           } ,
-          
+          select: {
+            style: 'multi'
+        }
         });
  }
 
+
+ function DelAllEvent(count) {
+
+  $('#messaged').modal('hide');
+  var Message="<i class=\"fa-solid fa-message-check\"></i> Event(s) Deleted";
+  
+  if(count >0){
+    var rowdata = tableevent.rows( { selected: true } ).data().toArray();
+    var Eventiddb="";
+    for(var i= 0; i < rowdata.length; i++) {
+      Eventiddb=Eventiddb + rowdata[i]._id+ ";";
+    }  
+  
+    Eventiddb=Eventiddb.slice(0, -1);
+
+    $.ajax({
+				url: 'Deletedb',
+				type: 'post',
+				dataType: 'html',
+				data : { Nbr: count, Eventid: Eventiddb},
+				success : function(data) {
+					$('#MessTitle').empty().html(Message);
+				},
+			  });
+
+  }
+  else {  
+
+  } 
+  /*var count = tableevent.rows( { selected: true } ).count();
+  var rowdata = tableevent.rows( { selected: true } ).data().toArray();
+
+
+  //alert(rows.length)
+  //alert(data.value)
+
+  for(var i= 0; i < data.length; i++)
+{
+     alert(rowdata[i]._id);
+}*/
+
+
+
+}
+
+function CloseModal(id) {
+  $(id).modal('hide');
+}
 
 /* Function Auto Refresh Every 5s */
 
@@ -223,6 +331,7 @@ function AutoReload() {
 /* Begin */
 
 $(document).ready( function () {
+  var selected = [];
   $('#btnReload').tooltip();  /* Setup Bouton Tooltip Reload*/
   $('#Bt-Delete').tooltip();  /* Setup Bouton Tooltip Delete*/
   Getevent(); /* Load Event in Table */
@@ -231,13 +340,28 @@ $(document).ready( function () {
 
 /* Reload when Button Refresh push */
 $('#btnReload').click(function() {
-
- $('#eventgithub').DataTable().ajax.reload();
- 
+   $('#eventgithub').DataTable().ajax.reload();
 });
 
+$('#Bt-Delete').click(function() {
+  var count = tableevent.rows( { selected: true } ).count();
+  var Link="javascript:DelAllEvent("+count+");";
+  if(count > 0) {
+    var Title="<i class=\"fas fa-exclamation-circle\"></i> Delete Events ?"
+    $("#DelTitle").empty();
+		$("#DelTitle").html(Title);
+    $("#linkdel").prop("href", Link);
+    $('#messaged').modal('show');
+  } else  {
+    var Title="<i class=\"fas fa-exclamation-circle\"></i> Delete All Events ?"
+    $("#DelTitle").empty();
+		$("#DelTitle").html(Title);
+    $("#linkdel").prop("href", Link);
+    $('#messaged').modal('show');
+  }
+});
 /* Set Auto Refresh Every 5 s */
-setInterval( AutoReload , 5000 );
+setInterval( AutoReload , 65000 );
 
 </script>
 
