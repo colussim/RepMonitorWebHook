@@ -25,12 +25,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/colussim/connectDB"
+	"modules/connectDB"
+
 	"github.com/google/go-github/github"
 	"github.com/slack-go/slack"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -38,6 +38,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+//"github.com/colussim/connectDB"
 type error interface {
 	Error() string
 }
@@ -400,57 +401,62 @@ func DeleteEventsDB(w http.ResponseWriter, r *http.Request) {
 		Count, _ := strconv.Atoi(r.FormValue("Nbr"))
 		NameDist := r.FormValue("Eventid")
 
-		var Request = "{ $in: ["
-		//var Request = ""
-		var Request1 bson.M
-
 		if Count > 1 {
 
-			//	{ "_id": { $in: [ObjectId('62722095e0b6d4073a96a5bf'),ObjectId('6267219f4c9950ae8189db68'),ObjectId('626bcd945b4d1d3c03a0f2b2'] } }
-
-			//	[]bson.M{bson.M{"$match": bson.M{"$and": []bson.M{bson.M{"storyID": storyID},bson.M{"parentID": parentID}}}}
-
 			IDCollection := strings.Split(NameDist, ";")
+			FirstEvt, _ := primitive.ObjectIDFromHex(IDCollection[0])
+			Request := bson.M{"_id": FirstEvt}
+
+			orQuery := []bson.M{}
 
 			for i := 0; i < len(IDCollection); i++ {
-				Request = Request + "ObjectId('" + IDCollection[i] + "'),"
-				//Request = Request + "'" + IDCollection[i] + "',"
+				evtid, _ := primitive.ObjectIDFromHex(IDCollection[i])
+				orQuery = append(orQuery, bson.M{"_id": evtid})
 			}
-			Request = Request[:len(Request)-1] + "]}"
-			//Request1 = bson.M{"_id": Request}
-			//Request1 = bson.M{Request}
 
-			//filter := bson.M{key: bson.M{"$in": values}}
-			//	{"_id": ObjectId('6267208b4c9950ae8189db6')}
+			Request["$or"] = orQuery
 
-			Request1 = bson.M{"_id": Request}
-			fmt.Println(Request1)
-			_, err := connectDB.RemoveReqCollection("loggithub", Request1, CONNECTIONSTRING, DB)
+			_, err := connectDB.RemoveReqCollection("loggithub", Request, CONNECTIONSTRING, DB)
 			if err != nil {
-				BuffErr := "<i class=\"fa fa-exclamation-circle\"></i>&ensp;&ensp;Error deleted Events : " + NameDist
 				log.Println("⇨ Error deleted Events : ", NameDist)
-				w.Write([]byte(BuffErr))
 			} else {
-				BuffErr := "<i class=\"fa fa-exclamation-circle\"></i>&ensp;&ensp;Distillery : " + NameDist + " deleted"
 				log.Println("⇨ Events deleted : ", NameDist)
-				w.Write([]byte(BuffErr))
 			}
 		} else {
-			Request1 := "6267208b4c9950ae8189db67"
-			rq, err := connectDB.RemoveCollection("loggithub", Request1, CONNECTIONSTRING, DB)
+
+			Request1 := NameDist
+
+			_, err := connectDB.RemoveCollection("loggithub", Request1, CONNECTIONSTRING, DB)
 			if err != nil {
 
 				log.Println("⇨ Error deleted Events : ", NameDist)
 
 			} else {
-				log.Println("⇨ deleted Events : ", reflect.TypeOf(rq))
+				log.Println("⇨ Deleted Events _id : ", NameDist)
 
 			}
 		}
 
 	}
-	//db.students.remove({class:"a"});//delete 2 docs
-	//db.students.deleteMany({class:"a"}); //alternative method, deleteMany
+}
+
+// Delete All Events in mongoDB database
+func DeleteEventsDBAll(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+
+		_, err := connectDB.RemoveAllCollection("loggithub", CONNECTIONSTRING, DB)
+		if err != nil {
+			log.Println("⇨ Error deleted All Events ")
+			BuffErr := "<i class=\"fa-solid fa-message-check\"></i> Error No Events deleted"
+			w.Write([]byte(BuffErr))
+		} else {
+			log.Println("⇨ All Events deleted")
+			BuffErr := "<i class=\"fa-solid fa-message-check\"></i> All Events deleted"
+			w.Write([]byte(BuffErr))
+		}
+
+	}
+
 }
 
 func main() {
@@ -465,6 +471,7 @@ func main() {
 	mux.HandleFunc("/event", DisplayEvent)
 	mux.HandleFunc("/eventr", DisplayEventR)
 	mux.HandleFunc("/Deletedb", DeleteEventsDB)
+	mux.HandleFunc("/DeletedbAll", DeleteEventsDBAll)
 
 	log.Println("⇨ http server started EndPoint on [::]:", AppConfig.PortUrl)
 	log.Fatal(http.ListenAndServe(":"+AppConfig.PortUrl, mux), nil)
