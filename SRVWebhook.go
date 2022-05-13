@@ -29,7 +29,7 @@ import (
 	"strings"
 	"time"
 
-	"modules/connectDB"
+	"github.com/colussim/connectDB"
 
 	"github.com/google/go-github/github"
 	"github.com/slack-go/slack"
@@ -38,7 +38,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//"github.com/colussim/connectDB"
 type error interface {
 	Error() string
 }
