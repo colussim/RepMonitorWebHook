@@ -135,7 +135,8 @@ table.dataTable tfoot th {
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom cart" style="color:floralwhite">
           <h1 class="h2" style="text-indent: 0.3em;">Events on GitHub</h1> 
           <div class="align-self-end ml-auto">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#DelAll" data-toggle="tooltip"  id="Bt-Delete" data-bs-placement="left" title="Delete"><i class="fa fa-trash"></i></button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#DelAll2" data-toggle="tooltip"  id="Bt2-Delete" data-bs-placement="left" title="Delete All Events"><i class="fa fa-eraser"></i></button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#DelAll" data-toggle="tooltip"  id="Bt-Delete" data-bs-placement="left" title="Delete Event"><i class="fa fa-trash"></i></button>
             <button class="btn btn-primary" data-toggle="tooltip"  id="btnReload" data-bs-placement="left" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
           </div>
         </div>
@@ -210,6 +211,8 @@ table.dataTable tfoot th {
 </div>
 
 <!-- End Dialog Box Message -->
+
+
    
 <script type="text/javascript" src="code_app/ext/DataTables/jQuery-3.6.0/jquery-3.6.0.min.js"></script>  
 <script type="text/javascript" src="code_app/ext/DataTables/js/moment.min.js"></script> 
@@ -295,28 +298,33 @@ function Getevent() {
 				data : { Nbr: count, Eventid: Eventiddb},
 				success : function(data) {
 					$('#MessTitle').empty().html(Message);
+          $('#messaged1').modal('show');
 				},
 			  });
 
   }
   else {  
-
+    var Message="<i class=\"fa-solid fa-message-check\"></i> No Event(s)";
   } 
-  /*var count = tableevent.rows( { selected: true } ).count();
-  var rowdata = tableevent.rows( { selected: true } ).data().toArray();
-
-
-  //alert(rows.length)
-  //alert(data.value)
-
-  for(var i= 0; i < data.length; i++)
-{
-     alert(rowdata[i]._id);
-}*/
-
-
 
 }
+
+function DelAllEvent2() {
+
+$('#messaged').modal('hide');
+
+  $.ajax({
+      url: 'DeletedbAll',
+      type: 'post',
+      dataType: 'html',
+      success : function(data) {
+        $('#MessTitle').empty().html(data);
+        $('#messaged1').modal('show');
+      },
+      });
+
+}
+
 
 function CloseModal(id) {
   $(id).modal('hide');
@@ -333,7 +341,8 @@ function AutoReload() {
 $(document).ready( function () {
   var selected = [];
   $('#btnReload').tooltip();  /* Setup Bouton Tooltip Reload*/
-  $('#Bt-Delete').tooltip();  /* Setup Bouton Tooltip Delete*/
+  $('#Bt-Delete').tooltip();  /* Setup Bouton Tooltip Delete event*/
+  $('#Bt2-Delete').tooltip();  /* Setup Bouton Tooltip Delete All Event*/
   Getevent(); /* Load Event in Table */
 
 } );
@@ -353,15 +362,31 @@ $('#Bt-Delete').click(function() {
     $("#linkdel").prop("href", Link);
     $('#messaged').modal('show');
   } else  {
+    var Title="<i class=\"fas fa-exclamation-circle\"></i> No Event selected !"
+    $("#MessTitle").empty();
+		$("#MessTitle").html(Title);
+    $('#messaged1').modal('show');
+  }
+});
+
+$('#Bt2-Delete').click(function() {
+  var count = tableevent.rows().count();
+  var Link="javascript:DelAllEvent2();";
+  if(count > 0) {
     var Title="<i class=\"fas fa-exclamation-circle\"></i> Delete All Events ?"
     $("#DelTitle").empty();
 		$("#DelTitle").html(Title);
     $("#linkdel").prop("href", Link);
     $('#messaged').modal('show');
+  } else  {
+    var Title="<i class=\"fas fa-exclamation-circle\"></i> No Event !"
+    $("#MessTitle").empty();
+		$("#MessTitle").html(Title);
+    $('#messaged1').modal('show');
   }
 });
-/* Set Auto Refresh Every 5 s */
-setInterval( AutoReload , 65000 );
+/* Set Auto Refresh Every 20 s */
+setInterval( AutoReload , 20000 );
 
 </script>
 
